@@ -1,14 +1,28 @@
 <ion-header>
   <ion-navbar>
-    <ion-title>
-      Ionic Blank
-    </ion-title>
+    <ion-title>Mapa de Asientos</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  The world is your oyster.
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v3">docs</a> will be your guide.
-  </p>
+
+  <div id="seatWrapper">
+    <div #seatContainer></div>
+  </div>
+
+  <!-- <div class="legend-footer">
+    <ul class="legend-list">
+      <li class="legend-item">
+        <div class="legend-bullet sc-seat-reserved"></div>
+        <p class="legend-description">Ocupado</p>
+      </li>
+      <li class="legend-item">
+        <div class="legend-bullet sc-seat sc-seat-selected"></div>
+        <p class="legend-description">Su Asiento</p>
+      </li>
+    </ul>
+  </div> -->
+  
+  <div id="floatingCart"></div> <!-- Contenedor para el carrito -->
+
 </ion-content>

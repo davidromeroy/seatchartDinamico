@@ -1,0 +1,60 @@
+{
+  "rows": 5,
+  "cols": 5,
+  "selectedColor": "#016095",
+  "types": {
+    "Ocupado": "#DDC329"
+  },
+  "seats": [
+    {
+      "row": 0,
+      "col": 0,
+      "type": "Ocupado"
+    },
+    {
+      "row": 0,
+      "col": 1,
+      "type": "Ocupado"
+    },
+    {
+      "row": 0,
+      "col": 2,
+      "type": "Ocupado"
+    },
+    {
+      "row": 1,
+      "col": 0,
+      "type": "Ocupado"
+    },
+    {
+      "row": 2,
+      "col": 0,
+      "type": "Ocupado"
+    },
+    {
+      "row": 3,
+      "col": 0,
+      "type": "Ocupado"
+    },
+    {
+      "row": 3,
+      "col": 1,
+      "type": "Ocupado"
+    },
+    {
+      "row": 4,
+      "col": 0,
+      "type": "Ocupado"
+    },
+    {
+      "row": 4,
+      "col": 1,
+      "type": "Ocupado"
+    },
+    {
+      "row": 4,
+      "col": 2,
+      "type": "Ocupado"
+    }
+  ]
+}
