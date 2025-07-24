@@ -11,12 +11,32 @@
     margin-top: 20px;
   }
 
+  #seatMap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px; /* espaciado vertical entre filas */
+  }
+
+  .seat-row {
+    display: flex;
+    gap: 0;
+  }
+
   .seat {
     width: 20px;
     height: 20px;
     border: 1px solid #aaa;
     cursor: pointer;
     background-color: #eee;
+    box-sizing: border-box;
+
+  }
+
+  .seat.offset {
+    width: 10px !important;
+    background-color: #CCCCCC; /* o gris claro si quieres verlos */
+    border: 1px solid #aaa;
+    pointer-events: none; /* opcional si no quieres que el offset sea clickeable */
   }
 
   .seat.aisle {

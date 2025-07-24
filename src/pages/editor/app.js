@@ -5,6 +5,7 @@ let isEraser = false;
 let selectedColor = '#3f4696ff'; // valor inicial por defecto
 let selectedColorAsiento = '#95013d'; // valor inicial por defecto
 let isAisleMode = false;
+let isOffsetMode = false;
 
 //TODO: arreglar que al importar pueda seleccionar asientos desde 
 // COLOR
@@ -107,7 +108,7 @@ document.addEventListener('mouseup', () => {
 });
 
 
-//////////
+////////// TOGGLE
 function toggleAisleForSeat(seat) {
   if (!seat.classList.contains('seat')) return;
 
@@ -122,6 +123,25 @@ function toggleAisleForSeat(seat) {
     seat.classList.add('aisle', 'disabled');
     seat.dataset.isAisle = 'true';
     seat.dataset.type = 'disabled';
+    seat.style.backgroundColor = '#ccc';
+  }
+}
+
+function toggleOffsetForSeat(seat) {
+  const isOffset = seat.dataset.type === 'offset';
+
+  if (isOffset) {
+    // Desactivar offset
+    seat.dataset.type = '';
+    seat.classList.remove('offset');
+    seat.dataset.isAisle = 'false';
+    seat.style.backgroundColor = '#eee';
+  } else {
+    // Activar offset
+    seat.dataset.type = 'offset';
+    seat.classList.add('offset');
+    seat.dataset.isAisle = 'false';
+    seat.classList.remove('aisle', 'disabled');
     seat.style.backgroundColor = '#ccc';
   }
 }
@@ -158,7 +178,7 @@ function applyTool(seat) {
 
   if (isEraser) {
     seat.dataset.type = '';
-    seat.classList.remove('aisle', 'disabled');
+    seat.classList.remove('aisle', 'disabled', 'offset');
     seat.dataset.isAisle = 'false';
     seat.style.backgroundColor = '#eee';
   } else {
@@ -196,13 +216,20 @@ function handleSeatClick(seat) {
 
   if (isEraser) {
     applyTool(seat);
-    return; // Evita que toggleAisle interfieran
+    return;
   }
 
   if (isAisleMode) {
     toggleAisleForSeat(seat);
-  } else {
-    applyTool(seat);    // paintSeat está incluida aquí
+    return;
+  }
+
+  if (isOffsetMode) {
+    toggleOffsetForSeat(seat);
+    return;
+  }
+  else {
+    applyTool(seat); // paintSeat incluida aquí
   }
 }
 
@@ -248,11 +275,13 @@ function generateGrid() {
   // const colLabels = getLabels(colMode, cols, colCustom);
 
 
-
   seatMap.innerHTML = '';
-  seatMap.style.gridTemplateColumns = `repeat(${cols}, 20px)`;
+  // seatMap.style.gridTemplateColumns = `repeat(${cols}, 20px)`;
 
   for (let r = 0; r < rows; r++) {
+    const rowDiv = document.createElement('div');
+    rowDiv.className = 'seat-row';
+    
     for (let c = 0; c < cols; c++) {
       const div = document.createElement('div');
       div.className = 'seat';
@@ -262,10 +291,12 @@ function generateGrid() {
       // div.title = `Fila ${rowLabels[r]} - Columna ${colLabels[c]}`;
 
       div.addEventListener('click', (e) => {
-  handleSeatClick(e.target);
-});
-      seatMap.appendChild(div);
+        handleSeatClick(e.target);
+      });
+
+      rowDiv.appendChild(div);
     }
+    seatMap.appendChild(rowDiv);
   }
   aplicarPasillosAutomaticos(rows, cols);
 }
@@ -281,7 +312,7 @@ document.getElementById('pasilloVInput').addEventListener('change', (e) => {
   generateGrid();
 });
 
-// Botón toggle modo manual
+// Botón toggle modo pasillo
 const toggleButton = document.getElementById('toggleAisleMode');
 toggleButton.addEventListener('click', () => {
   isAisleMode = !isAisleMode;
@@ -294,6 +325,23 @@ toggleButton.addEventListener('click', () => {
 
   toggleButton.textContent = `🛣️ Marcar Pasillo: ${isAisleMode ? 'ON' : 'OFF'}`;
 });
+
+// Botón toggle modo offset
+const offsetButton = document.getElementById('toggleOffsetMode');
+offsetButton.addEventListener('click', () => {
+  isOffsetMode = !isOffsetMode;
+
+  // 🔧 Si activas offset, desactiva pasillo y borrador
+  if (isOffsetMode) {
+    isAisleMode = false;
+    isEraser = false;
+    document.getElementById("toggleAisleMode").textContent = "🛣️ Marcar Pasillo: OFF";
+    document.getElementById("eraserButton").classList.remove("active");
+  }
+
+  offsetButton.textContent = `↔️ Modo Offset: ${isOffsetMode ? 'ON' : 'OFF'}`;
+});
+
 
 //
 function addSeatType(e) {
@@ -387,6 +435,14 @@ function updateTypeSelector() {
   }
 }
 
+function selectSeatTypeFromImport() {
+  const select = document.getElementById('seatTypeSelect');
+  if (select.options.length > 0) {
+    select.selectedIndex = 0;
+    activeType = select.value;
+  }
+}
+
 //EXPORT JSON
 function exportJSON() {
   const rows = parseInt(document.getElementById('rows').value);
@@ -462,6 +518,7 @@ function importFromJSON(data) {
   Object.assign(seatTypes, data.types || {});
   updateLegend();
   updateTypeSelector();
+  selectSeatTypeFromImport();
 
   // 2.5. Aplicar color de selección si existe
   if (data.selectedColor) {
@@ -476,8 +533,22 @@ function importFromJSON(data) {
   data.seats.forEach(seat => {
     const selector = `.seat[data-row="${seat.row}"][data-col="${seat.col}"]`;
     const seatEl = document.querySelector(selector);
-    if (seatEl && seatTypes[seat.type]) {
+    if (!seatEl) return;
+
+    if (seat.type === 'disabled') {
+      seatEl.classList.add('disabled', 'aisle');
+      seatEl.dataset.type = 'disabled';
+      seatEl.dataset.isAisle = 'true';
+      seatEl.style.backgroundColor = '#ccc';
+    } else if (seat.type === 'offset') {
+      seatEl.classList.add('offset');
+      seatEl.dataset.type = 'offset';
+      seatEl.dataset.isAisle = 'false';
+      seatEl.style.backgroundColor = '#ccc';
+    } else if (seatTypes[seat.type]) {
       seatEl.dataset.type = seat.type;
+      seatEl.dataset.isAisle = 'false';
+      seatEl.classList.remove('disabled', 'aisle');
       seatEl.style.backgroundColor = seatTypes[seat.type];
     }
   });

@@ -53,7 +53,6 @@ export class HomePage {
       this.applySelectedSeatColor(this.datos.selectedColor);
     }
 
-
     this.platform.ready().then(() => {
       const container = this.seatContainer.nativeElement;
 
@@ -122,7 +121,6 @@ export class HomePage {
     }
   }
 
-
   buildSeatTypesFromJson(json) {
     const seatTypes = {};
 
@@ -133,13 +131,14 @@ export class HomePage {
       cssClass: 'default-seat',
       seats: [] // Seatchart lo requiere aunque esté vacío
     };
-    
+    // TODO: hacer para que el min-width: 14px sea mas dinamico, que se indique del Editor Visual
+    // TODO: Considerar los indices del teatro para ajustar ese json, Pensar si se agregan o se quitan los indices porque se deben poner desde el Editor 
     const cssRules: string[] = [`
       .default-seat {
         background-color: transparent !important;
         color: transparent !important;
         pointer-events: none !important;
-        cursor: default; // 👉 Cursor normal 
+        cursor: default;
         min-width: 14px !important;
         width: 14px !important; 
       }
@@ -147,7 +146,7 @@ export class HomePage {
         background-color: #ccc !important;
         color: transparent !important;
         pointer-events: none !important;
-        cursor: default; // 👉 Cursor normal 
+        cursor: default;
       }
     `];
 
@@ -201,7 +200,6 @@ export class HomePage {
     styleTag.innerHTML = rules.join('\n');
     document.head.appendChild(styleTag);
   }
-
   
   private insertStage(container: HTMLElement) {
     const outer = container.querySelector('.sc-map');
