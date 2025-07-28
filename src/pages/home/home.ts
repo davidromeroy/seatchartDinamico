@@ -113,8 +113,8 @@ export class HomePage {
       if (
         typeof seat.row !== 'number' || 
         typeof seat.col !== 'number' || 
-        typeof seat.type !== 'string' ||
-        !(seat.type in data.types)
+        typeof seat.type !== 'string' //||
+        // !(seat.type in data.types)
       ) {
         throw new Error(`Asiento inválido: ${JSON.stringify(seat)}`);
       }
@@ -139,14 +139,16 @@ export class HomePage {
         color: transparent !important;
         pointer-events: none !important;
         cursor: default;
-        min-width: 14px !important;
-        width: 14px !important; 
+        // min-width: 14px !important;
+        // width: 14px !important; 
       }
-      .disabled {
-        background-color: #ccc !important;
+      .offset {
+        background-color: transparent !important;
         color: transparent !important;
         pointer-events: none !important;
         cursor: default;
+        min-width: 14px !important;
+        width: 14px !important; 
       }
     `];
 
@@ -166,7 +168,8 @@ export class HomePage {
       if (!json.types.hasOwnProperty(typeName)) continue;
 
       const color = json.types[typeName];
-      const className = `type_${typeIndex++}`;
+      const className = typeName.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => index === 0 ? word.toLowerCase() : word.toUpperCase()).replace(/\s+/g, '');
+      // const className = `type_${typeIndex++}`;
 
       const seats = json.seats
         .filter(seat => seat.type === typeName)
@@ -174,12 +177,28 @@ export class HomePage {
           row: seat.row,
           col: seat.col
         }));
+      
+      const offset = json.seats
+        .filter(seat => seat.type === 'offset')
+        .map(seat => ({
+          row: seat.row,
+          col: seat.col
+        }));
+
+      console.log(offset)
 
       seatTypes[className] = {
         label: typeName,
-        price: 10,
+        price: 10, // TODO: traer valor, en puntos, desde el editor 
         cssClass: className,
         seats: seats
+      };
+
+      seatTypes['offset'] = {
+        label: 'offset',
+        price: 0, // TODO: traer valor, en puntos, desde el editor 
+        cssClass: 'offset',
+        seats: offset
       };
 
       cssRules.push(`
@@ -189,6 +208,8 @@ export class HomePage {
         }
       `);
     }
+
+
 
     this.injectDynamicStyles(cssRules);
     return seatTypes;

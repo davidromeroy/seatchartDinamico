@@ -165,7 +165,7 @@ function toggleEraser() {
   // 🔧 Desactiva modo pasillo si el borrador se activa
   if (isEraser && isAisleMode) {
     isAisleMode = false;
-    toggleButton.textContent = `🛣️ Marcar Pasillo: OFF`;
+    toggleButton.textContent = `🛣️ Deshabilitar asientos: OFF`;
   }
 
   const eraserButton = document.getElementById("eraserButton");
@@ -323,7 +323,7 @@ toggleButton.addEventListener('click', () => {
     document.getElementById("eraserButton").classList.remove("active");
   }
 
-  toggleButton.textContent = `🛣️ Marcar Pasillo: ${isAisleMode ? 'ON' : 'OFF'}`;
+  toggleButton.textContent = `🛣️ Deshabilitar asientos: ${isAisleMode ? 'ON' : 'OFF'}`;
 });
 
 // Botón toggle modo offset
@@ -335,7 +335,7 @@ offsetButton.addEventListener('click', () => {
   if (isOffsetMode) {
     isAisleMode = false;
     isEraser = false;
-    document.getElementById("toggleAisleMode").textContent = "🛣️ Marcar Pasillo: OFF";
+    document.getElementById("toggleAisleMode").textContent = "🛣️ Deshabilitar asientos: OFF";
     document.getElementById("eraserButton").classList.remove("active");
   }
 
@@ -504,7 +504,7 @@ document.getElementById('importJsonBtn').addEventListener('click', () => {
   }
 
   importFromJSON(parsed);
-  alert("✅ Mapa importado con éxito.");
+  // alert("✅ Mapa importado con éxito.");
 });
 
 function importFromJSON(data) {

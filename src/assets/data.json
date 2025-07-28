@@ -9,7 +9,7 @@
     {
       "row": 0,
       "col": 0,
-      "type": "Ocupado"
+      "type": "offset"
     },
     {
       "row": 0,
@@ -22,19 +22,34 @@
       "type": "Ocupado"
     },
     {
+      "row": 0,
+      "col": 4,
+      "type": "offset"
+    },
+    {
       "row": 1,
       "col": 0,
+      "type": "offset"
+    },
+    {
+      "row": 1,
+      "col": 1,
       "type": "Ocupado"
     },
     {
       "row": 2,
       "col": 0,
+      "type": "offset"
+    },
+    {
+      "row": 2,
+      "col": 1,
       "type": "Ocupado"
     },
     {
       "row": 3,
       "col": 0,
-      "type": "Ocupado"
+      "type": "offset"
     },
     {
       "row": 3,
@@ -44,7 +59,7 @@
     {
       "row": 4,
       "col": 0,
-      "type": "Ocupado"
+      "type": "offset"
     },
     {
       "row": 4,
@@ -55,6 +70,11 @@
       "row": 4,
       "col": 2,
       "type": "Ocupado"
+    },
+    {
+      "row": 4,
+      "col": 4,
+      "type": "offset"
     }
   ]
 }
