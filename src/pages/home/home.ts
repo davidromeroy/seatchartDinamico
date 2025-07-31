@@ -1,21 +1,19 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { Platform, NavController, NavParams } from 'ionic-angular';
-import { AlertController } from 'ionic-angular';
-import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, ViewChild } from "@angular/core";
+import { Platform, NavController, NavParams } from "ionic-angular";
+import { AlertController } from "ionic-angular";
+import { HttpClient } from "@angular/common/http";
 
 // import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 // import { AsientosAsientosServicesProvider, FilaMap } from '../../providers/asientos-asientos-services/asientos-asientos-services';
 
-
 declare var require: any;
-const Seatchart = require('seatchart');
-
+const Seatchart = require("seatchart");
 
 // @IonicPage()
 @Component({
-  selector: 'page-home',
-  templateUrl: 'home.html'
+  selector: "page-home",
+  templateUrl: "home.html",
 })
 export class HomePage {
   private sc: any;
@@ -25,7 +23,7 @@ export class HomePage {
   // filasMap: FilaMap = {};
   isMapaCargado: boolean = false;
 
-  @ViewChild('seatContainer') seatContainer: ElementRef;
+  @ViewChild("seatContainer") seatContainer: ElementRef;
   constructor(
     // private asientosProvider: AsientosAsientosServicesProvider
     public http: HttpClient,
@@ -37,12 +35,12 @@ export class HomePage {
 
   async cargarJSON(): Promise<void> {
     try {
-      const res = await this.http.get('assets/teatro.json').toPromise();
+      const res = await this.http.get("assets/teatro.json").toPromise();
       this.datos = res;
-      console.log('✅ Datos cargados:', this.datos);
+      console.log("✅ Datos cargados:", this.datos);
       this.validateJson(this.datos);
     } catch (err) {
-      console.error('❌ Error al cargar JSON', err);
+      console.error("❌ Error al cargar JSON", err);
     }
   }
 
@@ -68,10 +66,10 @@ export class HomePage {
           disabledSeats: [],
           indexerColumns: { visible: false },
           indexerRows: { visible: false },
-          frontVisible: false
+          frontVisible: false,
         },
-        cart: { currency: '$', submitLabel: 'Reservar' },
-        legendVisible: true
+        cart: { currency: "$", submitLabel: "Reservar" },
+        legendVisible: true,
       };
 
       // Inicializa el seatchart con las opciones construidas
@@ -79,7 +77,7 @@ export class HomePage {
 
       // 1. Inserta el escenario (STAGE)
       // this.insertStage(container);
-      
+
       // 2. Reubica el carrito flotante
       this.relocateCart(container, this.sc);
 
@@ -88,12 +86,12 @@ export class HomePage {
 
       // // 4. Configura la lógica de submit
       // this.setupSubmitHandler(this.sc);
-    })
+    });
   }
 
   applySelectedSeatColor(color: string) {
-    const styleTag = document.createElement('style');
-    styleTag.type = 'text/css';
+    const styleTag = document.createElement("style");
+    styleTag.type = "text/css";
     styleTag.innerHTML = `
       .sc-seat.sc-seat-selected {
         background-color: ${color} !important;
@@ -103,17 +101,16 @@ export class HomePage {
     document.head.appendChild(styleTag);
   }
 
-
   validateJson(data) {
     if (!data.rows || !data.cols || !data.types || !Array.isArray(data.seats)) {
-      throw new Error('Formato JSON inválido');
+      throw new Error("Formato JSON inválido");
     }
 
     for (const seat of data.seats) {
       if (
-        typeof seat.row !== 'number' || 
-        typeof seat.col !== 'number' || 
-        typeof seat.type !== 'string' //||
+        typeof seat.row !== "number" ||
+        typeof seat.col !== "number" ||
+        typeof seat.type !== "string" //||
         // !(seat.type in data.types)
       ) {
         throw new Error(`Asiento inválido: ${JSON.stringify(seat)}`);
@@ -125,15 +122,16 @@ export class HomePage {
     const seatTypes = {};
 
     // 1. Default obligatorio
-    seatTypes['default'] = {
-      label: 'Libre',
+    seatTypes["default"] = {
+      label: "Libre",
       price: 0,
-      cssClass: 'default-seat',
-      seats: [] // Seatchart lo requiere aunque esté vacío
+      cssClass: "default-seat",
+      seats: [], // Seatchart lo requiere aunque esté vacío
     };
     // TODO: hacer para que el min-width: 14px sea mas dinamico, que se indique del Editor Visual
-    // TODO: Considerar los indices del teatro para ajustar ese json, Pensar si se agregan o se quitan los indices porque se deben poner desde el Editor 
-    const cssRules: string[] = [`
+    // TODO: Considerar los indices del teatro para ajustar ese json, Pensar si se agregan o se quitan los indices porque se deben poner desde el Editor
+    const cssRules: string[] = [
+      `
       .default-seat {
         background-color: transparent !important;
         color: transparent !important;
@@ -150,10 +148,14 @@ export class HomePage {
         min-width: 14px !important;
         width: 14px !important; 
       }
-    `];
+    `,
+    ];
 
-      // 👉 Inyectamos el color de selección dinámico si existe en el JSON
-    if (json.selectedColor && /^#([0-9A-F]{3}){1,2}$/i.test(json.selectedColor)) {
+    // 👉 Inyectamos el color de selección dinámico si existe en el JSON
+    if (
+      json.selectedColor &&
+      /^#([0-9A-F]{3}){1,2}$/i.test(json.selectedColor)
+    ) {
       cssRules.push(`
         .sc-seat.sc-seat-selected {
           background-color: ${json.selectedColor} !important;
@@ -161,44 +163,48 @@ export class HomePage {
         }
       `);
     }
-    
+
     let typeIndex = 0;
 
     for (const typeName in json.types) {
       if (!json.types.hasOwnProperty(typeName)) continue;
 
       const color = json.types[typeName];
-      const className = typeName.replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) => index === 0 ? word.toLowerCase() : word.toUpperCase()).replace(/\s+/g, '');
+      const className = typeName
+        .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) =>
+          index === 0 ? word.toLowerCase() : word.toUpperCase()
+        )
+        .replace(/\s+/g, "");
       // const className = `type_${typeIndex++}`;
 
       const seats = json.seats
-        .filter(seat => seat.type === typeName)
-        .map(seat => ({
+        .filter((seat) => seat.type === typeName)
+        .map((seat) => ({
           row: seat.row,
-          col: seat.col
-        }));
-      
-      const offset = json.seats
-        .filter(seat => seat.type === 'offset')
-        .map(seat => ({
-          row: seat.row,
-          col: seat.col
+          col: seat.col,
         }));
 
-      console.log(offset)
+      const offset = json.seats
+        .filter((seat) => seat.type === "offset")
+        .map((seat) => ({
+          row: seat.row,
+          col: seat.col,
+        }));
+
+      console.log(offset);
 
       seatTypes[className] = {
         label: typeName,
-        price: 10, // TODO: traer valor, en puntos, desde el editor 
+        price: 10, // TODO: traer valor, en puntos, desde el editor
         cssClass: className,
-        seats: seats
+        seats: seats,
       };
 
-      seatTypes['offset'] = {
-        label: 'offset',
-        price: 0, // TODO: traer valor, en puntos, desde el editor 
-        cssClass: 'offset',
-        seats: offset
+      seatTypes["offset"] = {
+        label: "offset",
+        price: 0, // TODO: traer valor, en puntos, desde el editor
+        cssClass: "offset",
+        seats: offset,
       };
 
       cssRules.push(`
@@ -209,47 +215,45 @@ export class HomePage {
       `);
     }
 
-
-
     this.injectDynamicStyles(cssRules);
     return seatTypes;
   }
 
   injectDynamicStyles(rules: string[]) {
-    const styleTag = document.createElement('style');
-    styleTag.type = 'text/css';
-    styleTag.innerHTML = rules.join('\n');
+    const styleTag = document.createElement("style");
+    styleTag.type = "text/css";
+    styleTag.innerHTML = rules.join("\n");
     document.head.appendChild(styleTag);
   }
-  
+
   private insertStage(container: HTMLElement) {
-    const outer = container.querySelector('.sc-map');
+    const outer = container.querySelector(".sc-map");
     if (!outer) return;
-    const mapContainer = outer.querySelector('.sc-map-inner-container');
+    const mapContainer = outer.querySelector(".sc-map-inner-container");
     if (!mapContainer) return;
 
-    const stageDiv = document.createElement('div');
-    stageDiv.className = 'stage';
-    stageDiv.textContent = 'Escenario';
+    const stageDiv = document.createElement("div");
+    stageDiv.className = "stage";
+    stageDiv.textContent = "Escenario";
     mapContainer.appendChild(stageDiv);
   }
 
   private relocateCart(container: HTMLElement, sc: any) {
     // Espera a que todo el DOM se haya renderizado por Seatchart
     requestAnimationFrame(() => {
-      const cartContainer = document.getElementById('floatingCart');
+      const cartContainer = document.getElementById("floatingCart");
       if (!cartContainer) return;
 
-      const originalHeader = container.querySelector('.sc-cart-header');
-      const originalFooter = container.querySelector('.sc-cart-footer');
-      const originalContainer = container.querySelector('.sc-right-container');
+      const originalHeader = container.querySelector(".sc-cart-header");
+      const originalFooter = container.querySelector(".sc-cart-footer");
+      const originalContainer = container.querySelector(".sc-right-container");
 
       // Si no existe el header o el footer, no sigas (evita errores)
       if (!originalHeader || !originalFooter) return;
 
       // Remueve headers/footers anteriores del carrito flotante si existen
-      const existingHeader = cartContainer.querySelector('.sc-cart-header');
-      const existingFooter = cartContainer.querySelector('.sc-cart-footer');
+      const existingHeader = cartContainer.querySelector(".sc-cart-header");
+      const existingFooter = cartContainer.querySelector(".sc-cart-footer");
       if (existingHeader) existingHeader.remove();
       if (existingFooter) existingFooter.remove();
 
@@ -258,12 +262,12 @@ export class HomePage {
       cartContainer.appendChild(originalFooter);
 
       // Remueve cualquier contador anterior
-      const existingCount = cartContainer.querySelector('.cart-count');
+      const existingCount = cartContainer.querySelector(".cart-count");
       if (existingCount) existingCount.remove();
 
       // Crea el contador de tickets
-      const countP = document.createElement('p');
-      countP.classList.add('cart-count');
+      const countP = document.createElement("p");
+      countP.classList.add("cart-count");
       countP.textContent = `${sc.getCart().length} tickets`;
 
       // Intenta insertarlo al principio del header, si existe
@@ -288,8 +292,6 @@ export class HomePage {
 
   //   sc.addEventListener('cartchange', () => {
   //     const cart = sc.getCart();
-
-      
 
   //     // let saldoTemp = this.initialUserAmount;
   //     const detallesInvalidos: string[] = [];
@@ -342,5 +344,4 @@ export class HomePage {
   //     this.actualizarEstadoUsuario();
   //   });
   // }
-
 }

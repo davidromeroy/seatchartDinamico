@@ -1,58 +1,54 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Editor Visual de Asientos</title>
-  <link rel="stylesheet" href="styles.css">
-  
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"/>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Editor Visual de Asientos</title>
+    <link rel="stylesheet" href="styles.css" />
 
-  <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/themes/classic.min.css"
+    />
 
-</head>
-<body>
-  <h1>Editor Visual de Asientos</h1>
+    <script src="https://cdn.jsdelivr.net/npm/@simonwep/pickr/dist/pickr.min.js"></script>
+  </head>
+  <body>
+    <h1>Editor Visual de Asientos</h1>
 
-  <div class="controls">
-    Filas: <input type="number" id="rows" value="5" min="1">
-    Columnas: <input type="number" id="cols" value="5" min="1">
-    <button onclick="generateGrid()">Generar Mapa</button>
-  </div>
+    <div class="controls">
+      Filas: <input type="number" id="rows" value="5" min="1" /> Columnas:
+      <input type="number" id="cols" value="5" min="1" />
+      <button onclick="generateGrid()">Generar Mapa</button>
+    </div>
 
-  <div class="controls">
-    <label for="plantilla">Plantilla:</label>
-    <select id="plantilla">
-      <option value="">-- Selecciona --</option>
-      <option value="cine">🎬 Cine</option>
-      <option value="teatro">🎭 Teatro</option>
-      <option value="estadio">⚽ Estadio</option>
-    </select>
-  </div>
+    <div class="controls">
+      <label for="plantilla">Plantilla:</label>
+      <select id="plantilla">
+        <option value="">-- Selecciona --</option>
+        <option value="cine">🎬 Cine</option>
+        <option value="teatro">🎭 Teatro</option>
+        <option value="estadio">⚽ Estadio</option>
+      </select>
+    </div>
 
-  <div class="controlsH">
-    <label for="selectedColor">Asientos seleccionados:</label>
-    <div id="selected-color-picker"></div>
-  </div>
- 
- 
-  <h3>Agregar Pasillos</h3>
-  <div class="controls">
-    <label>Pasillo horizontal cada:</label>
-    <input type="number" id="pasilloHInput" min="0" value="0">
+    <div class="controlsH">
+      <label for="selectedColor">Asientos seleccionados:</label>
+      <div id="selected-color-picker"></div>
+    </div>
 
-    <label>Pasillo vertical cada:</label>
-    <input type="number" id="pasilloVInput" min="0" value="0">
+    <h3>Agregar Pasillos</h3>
+    <div class="controls">
+      <label>Pasillo horizontal cada:</label>
+      <input type="number" id="pasilloHInput" min="0" value="0" />
 
-    <button id="toggleAisleMode">🛣️ Deshabilitar asientos: OFF</button>
-    <button id="toggleOffsetMode">↔️ Modo Offset: OFF</button>
+      <label>Pasillo vertical cada:</label>
+      <input type="number" id="pasilloVInput" min="0" value="0" />
 
-  </div>
+      <button id="toggleAisleMode">🛣️ Deshabilitar asientos: OFF</button>
+      <button id="toggleOffsetMode">↔️ Modo Offset: OFF</button>
+    </div>
 
-  
-  
-
-
-  <!-- <div class="controls">
+    <!-- <div class="controls">
     <h3>Etiquetas de Filas</h3>
     <label><input type="radio" name="rowLabelMode" value="number" checked> Números</label>
     <label><input type="radio" name="rowLabelMode" value="letter"> Letras</label>
@@ -69,44 +65,52 @@
     <input type="text" id="customColLabels" placeholder="Ej: A1, A2, A3">
     </div> -->
 
-  
-  <form id="typeForm" onsubmit="addSeatType(event)">
-    <h3>Agregar tipo de asiento</h3>
+    <form id="typeForm" onsubmit="addSeatType(event)">
+      <h3>Agregar tipo de asiento</h3>
+      <div class="controls">
+        <label>Nombre:</label>
+        <input
+          type="text"
+          id="typeName"
+          placeholder="Tipo de asiento"
+          required
+        />
+        <label>Valor:</label>
+        <input
+          type="number"
+          id="typePrice"
+          placeholder="Precio"
+          min="0"
+          required
+        />
+      </div>
+      <div class="controlsH">
+        <label>Color:</label>
+        <div id="color-picker"></div>
+      </div>
+      <button type="submit">➕ Agregar/actualizar</button>
+    </form>
+
+    <h3>Seleccion de asientos</h3>
     <div class="controls">
-      <label>Nombre:</label>
-      <input type="text" id="typeName" required>
+      <label for="seatTypeSelect">Tipo de asiento:</label>
+      <select id="seatTypeSelect"></select>
     </div>
-    <div class="controlsH">
-      <label>Color:</label> 
-      <div id="color-picker"></div>
+
+    <div class="chip-container" id="legend"></div>
+
+    <button id="eraserButton" onclick="toggleEraser()">🧽 Modo borrador</button>
+
+    <div id="seatMap" class="grid"></div>
+
+    <button onclick="exportJSON()">📤 Exportar JSON</button>
+    <button id="importJsonBtn">📥 Importar JSON</button>
+
+    <div id="jsonContainer" class="json-block">
+      <button class="copy-btn" onclick="copyJSON()">📋</button>
+      <textarea id="jsonOutput" placeholder="{}"></textarea>
     </div>
-    <button type="submit">➕ Agregar</button>
-  </form>
 
-
-  <h3>Seleccion de asientos</h3>
-  <div class="controls">
-    <label for="seatTypeSelect">Tipo de asiento:</label>
-    <select id="seatTypeSelect"></select>
-  </div>
-
-  <div  class="chip-container" id="legend"></div>
-
-
-  <button id="eraserButton" onclick="toggleEraser()">🧽 Modo borrador</button>
-
-  
-  <div id="seatMap" class="grid"></div>
-
-  <button onclick="exportJSON()">📤 Exportar JSON</button>
-  <button id="importJsonBtn">📥 Importar JSON</button>
-
-
-<div id="jsonContainer" class="json-block">
-  <button class="copy-btn" onclick="copyJSON()">📋</button>
-  <textarea id="jsonOutput">{}</textarea>
-</div>
-
-  <script src="app.js"></script>
-</body>
+    <script src="app.js"></script>
+  </body>
 </html>
