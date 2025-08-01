@@ -18,21 +18,22 @@ export class HomePage {
   private sc: any;
   private datos: any;
   zoomLevel: number;
+  disabledSeats: any;
 
   // filasMap: FilaMap = {};
   isMapaCargado: boolean = false;
 
   @ViewChild("seatContainer") seatContainer: ElementRef;
   constructor(
-    // private asientosProvider: AsientosAsientosServicesProvider
     public http: HttpClient,
     public navCtrl: NavController,
     public navParams: NavParams,
     public alertCtrl: AlertController,
     private platform: Platform,
-    private asientosProvider: AsientosAsientosServicesProvider // <--- inyecta el servicio aquí
+    private asientosProvider: AsientosAsientosServicesProvider
   ) {}
 
+  // FUNCION PARA CARGAR LOS ASIENTOS DESDE UN ARCHIVO JSON
   async cargarJSON(): Promise<void> {
     try {
       const res = await this.http.get("assets/teatro.json").toPromise();
@@ -45,12 +46,12 @@ export class HomePage {
   }
 
   async ionViewDidLoad() {
-    // await this.cargarJSON(); // 👈 Esperamos a que se cargue antes de continuar
+    // await this.cargarJSON(); // 👈 Cargamos los datos de un JSON y esperamos a que se cargue antes de continuar
     this.datos = await this.asientosProvider.getMapaDeAsientos();
     console.log("mapa: ", this.datos);
 
     // if (this.datos.selectedColor) {
-    this.applySelectedSeatColor(this.datos.selectedColor);
+    //   this.applySelectedSeatColor(this.datos.selectedColor);
     // }
 
     this.platform.ready().then(() => {
@@ -65,7 +66,7 @@ export class HomePage {
           columns: this.datos.cols,
           seatTypes: seatTypes,
           reservedSeats: [],
-          disabledSeats: [],
+          disabledSeats: this.disabledSeats,
           indexerColumns: { visible: false },
           indexerRows: { visible: false },
           frontVisible: false,
@@ -78,7 +79,7 @@ export class HomePage {
       this.sc = new Seatchart(container, options);
 
       // 1. Inserta el escenario (STAGE)
-      // this.insertStage(container);
+      this.insertStage(container);
 
       // 2. Reubica el carrito flotante
       this.relocateCart(container, this.sc);
@@ -91,17 +92,17 @@ export class HomePage {
     });
   }
 
-  applySelectedSeatColor(color: string) {
-    const styleTag = document.createElement("style");
-    styleTag.type = "text/css";
-    styleTag.innerHTML = `
-      .sc-seat.sc-seat-selected {
-        background-color: ${color} !important;
-        color: white !important;
-      }
-    `;
-    document.head.appendChild(styleTag);
-  }
+  // applySelectedSeatColor(color: string) {
+  //   const styleTag = document.createElement("style");
+  //   styleTag.type = "text/css";
+  //   styleTag.innerHTML = `
+  //     .sc-seat.sc-seat-selected {
+  //       background-color: ${color} !important;
+  //       color: white !important;
+  //     }
+  //   `;
+  //   document.head.appendChild(styleTag);
+  // }
 
   validateJson(data) {
     if (!data.rows || !data.cols || !data.types || !Array.isArray(data.seats)) {
@@ -166,7 +167,7 @@ export class HomePage {
       `);
     }
 
-    let typeIndex = 0;
+    // let typeIndex = 0;
 
     for (const typeName in json.types) {
       if (!json.types.hasOwnProperty(typeName)) continue;
@@ -194,16 +195,23 @@ export class HomePage {
           col: seat.col,
         }));
 
+      this.disabledSeats = json.seats
+        .filter((seat) => seat.type === "disabled")
+        .map((seat) => ({
+          row: seat.row,
+          col: seat.col,
+        }));
+
       seatTypes[className] = {
         label: typeName,
-        price: precio, // TODO: traer valor, en puntos, desde el editor
+        price: precio,
         cssClass: className,
         seats: seats,
       };
 
       seatTypes["offset"] = {
         label: "offset",
-        price: 0, // TODO: traer valor, en puntos, desde el editor
+        price: 0,
         cssClass: "offset",
         seats: offset,
       };
