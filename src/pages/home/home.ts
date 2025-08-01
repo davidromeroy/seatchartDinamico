@@ -2,10 +2,9 @@ import { Component, ElementRef, ViewChild } from "@angular/core";
 import { Platform, NavController, NavParams } from "ionic-angular";
 import { AlertController } from "ionic-angular";
 import { HttpClient } from "@angular/common/http";
+import { AsientosAsientosServicesProvider } from "../../providers/asientos-asientos-services/asientos-asientos-services";
 
-// import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
-// import { AsientosAsientosServicesProvider, FilaMap } from '../../providers/asientos-asientos-services/asientos-asientos-services';
+// import { IonicPage } from 'ionic-angular';
 
 declare var require: any;
 const Seatchart = require("seatchart");
@@ -30,7 +29,8 @@ export class HomePage {
     public navCtrl: NavController,
     public navParams: NavParams,
     public alertCtrl: AlertController,
-    private platform: Platform
+    private platform: Platform,
+    private asientosProvider: AsientosAsientosServicesProvider // <--- inyecta el servicio aquí
   ) {}
 
   async cargarJSON(): Promise<void> {
@@ -45,11 +45,13 @@ export class HomePage {
   }
 
   async ionViewDidLoad() {
-    await this.cargarJSON(); // 👈 Esperamos a que se cargue antes de continuar
+    // await this.cargarJSON(); // 👈 Esperamos a que se cargue antes de continuar
+    this.datos = await this.asientosProvider.getMapaDeAsientos();
+    console.log("mapa: ", this.datos);
 
-    if (this.datos.selectedColor) {
-      this.applySelectedSeatColor(this.datos.selectedColor);
-    }
+    // if (this.datos.selectedColor) {
+    this.applySelectedSeatColor(this.datos.selectedColor);
+    // }
 
     this.platform.ready().then(() => {
       const container = this.seatContainer.nativeElement;
@@ -169,7 +171,8 @@ export class HomePage {
     for (const typeName in json.types) {
       if (!json.types.hasOwnProperty(typeName)) continue;
 
-      const color = json.types[typeName];
+      const color = json.types[typeName].color;
+      const precio = Number(json.types[typeName].price);
       const className = typeName
         .replace(/(?:^\w|[A-Z]|\b\w)/g, (word, index) =>
           index === 0 ? word.toLowerCase() : word.toUpperCase()
@@ -191,11 +194,9 @@ export class HomePage {
           col: seat.col,
         }));
 
-      console.log(offset);
-
       seatTypes[className] = {
         label: typeName,
-        price: 10, // TODO: traer valor, en puntos, desde el editor
+        price: precio, // TODO: traer valor, en puntos, desde el editor
         cssClass: className,
         seats: seats,
       };

@@ -27,25 +27,13 @@
         <option value="">-- Selecciona --</option>
         <option value="cine">🎬 Cine</option>
         <option value="teatro">🎭 Teatro</option>
-        <option value="estadio">⚽ Estadio</option>
+        <option value="random">Ejemplo</option>
       </select>
     </div>
 
     <div class="controlsH">
       <label for="selectedColor">Asientos seleccionados:</label>
       <div id="selected-color-picker"></div>
-    </div>
-
-    <h3>Agregar Pasillos</h3>
-    <div class="controls">
-      <label>Pasillo horizontal cada:</label>
-      <input type="number" id="pasilloHInput" min="0" value="0" />
-
-      <label>Pasillo vertical cada:</label>
-      <input type="number" id="pasilloVInput" min="0" value="0" />
-
-      <button id="toggleAisleMode">🛣️ Deshabilitar asientos: OFF</button>
-      <button id="toggleOffsetMode">↔️ Modo Offset: OFF</button>
     </div>
 
     <!-- <div class="controls">
@@ -100,6 +88,9 @@
     <div class="chip-container" id="legend"></div>
 
     <button id="eraserButton" onclick="toggleEraser()">🧽 Modo borrador</button>
+    <button id="toggleAisleMode">🛣️ Deshabilitar asientos: OFF</button>
+    <button id="toggleOffsetMode">↔️ Modo Offset: OFF</button>
+
 
     <div id="seatMap" class="grid"></div>
 

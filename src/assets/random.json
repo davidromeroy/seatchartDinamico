@@ -3,7 +3,14 @@
   "cols": 5,
   "selectedColor": "#016095",
   "types": {
-    "Ocupado": "#DDC329"
+    "Platea H": {
+      "color": "#3f4696ff",
+      "price": "20"
+    },
+    "Ocupado": {
+      "color": "#E8F03D",
+      "price": "10"
+    }
   },
   "seats": [
     {
@@ -14,12 +21,17 @@
     {
       "row": 0,
       "col": 1,
-      "type": "Ocupado"
+      "type": "Platea H"
     },
     {
       "row": 0,
       "col": 2,
-      "type": "Ocupado"
+      "type": "Platea H"
+    },
+    {
+      "row": 0,
+      "col": 3,
+      "type": "Platea H"
     },
     {
       "row": 0,
@@ -34,6 +46,11 @@
     {
       "row": 1,
       "col": 1,
+      "type": "Platea H"
+    },
+    {
+      "row": 1,
+      "col": 2,
       "type": "Ocupado"
     },
     {
@@ -44,6 +61,11 @@
     {
       "row": 2,
       "col": 1,
+      "type": "Platea H"
+    },
+    {
+      "row": 2,
+      "col": 2,
       "type": "Ocupado"
     },
     {
@@ -54,6 +76,11 @@
     {
       "row": 3,
       "col": 1,
+      "type": "Ocupado"
+    },
+    {
+      "row": 3,
+      "col": 2,
       "type": "Ocupado"
     },
     {

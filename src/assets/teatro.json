@@ -3,9 +3,18 @@
   "cols": 64,
   "selectedColor": "#124F26",
   "types": {
-    "Platea A": "#FFFF00",
-    "Platea B": "#43E3D3",
-    "Platea C": "#FF00FF"
+    "Platea A": {
+      "color": "#FFFF00",
+      "price": "20"
+    },
+    "Platea B": {
+      "color": "#43E3D3",
+      "price": "40"
+    },
+    "Platea C": {
+      "color": "#FF00FF",
+      "price": "60"
+    }
   },
   "seats": [
     {

@@ -109,7 +109,7 @@ document.addEventListener("mouseup", () => {
   isDragging = false;
 });
 
-////////// TOGGLE
+// TOGGLE
 function toggleAisleForSeat(seat) {
   if (!seat.classList.contains("seat")) return;
 
@@ -162,9 +162,14 @@ function toggleEraser() {
   isEraser = !isEraser;
 
   // 🔧 Desactiva modo pasillo si el borrador se activa
-  if (isEraser && isAisleMode) {
+  if (isEraser) {
     isAisleMode = false;
-    toggleButton.textContent = `🛣️ Deshabilitar asientos: OFF`;
+    isOffsetMode = false;
+    aisleButton.textContent = `🛣️ Deshabilitar asientos: OFF`;
+    offsetButton.style.backgroundColor = "";
+    offsetButton.style.color = "";
+    aisleButton.style.backgroundColor = "";
+    aisleButton.style.color = "";
   }
 
   const eraserButton = document.getElementById("eraserButton");
@@ -180,6 +185,7 @@ function applyTool(seat) {
     seat.classList.remove("aisle", "disabled", "offset");
     seat.dataset.isAisle = "false";
     seat.style.backgroundColor = "#eee";
+    return;
   } else {
     paintSeat(seat);
   }
@@ -194,7 +200,7 @@ function paintSeat(seat) {
     // Si estás haciendo drag, solo cambia si es diferente
     if (current !== activeType) {
       seat.dataset.type = activeType;
-      seat.style.backgroundColor = seatTypes[activeType];
+      seat.style.backgroundColor = seatTypes[activeType].color;
     }
   } else {
     // Si es clic suelto, permite toggle
@@ -203,12 +209,12 @@ function paintSeat(seat) {
       seat.style.backgroundColor = "#eee";
     } else {
       seat.dataset.type = activeType;
-      seat.style.backgroundColor = seatTypes[activeType];
+      seat.style.backgroundColor = seatTypes[activeType].color;
     }
   }
 }
 
-////// Manejar Click
+// MANEJAR CLICK
 function handleSeatClick(seat) {
   if (!seat.classList.contains("seat")) return;
 
@@ -225,36 +231,46 @@ function handleSeatClick(seat) {
   if (isOffsetMode) {
     toggleOffsetForSeat(seat);
     return;
-  } else {
+  } 
+  
+  else {
     applyTool(seat); // paintSeat incluida aquí
   }
 }
 
-// PASILLOS AUTOMÁTICOS
-let pasilloHorizontalCada = 0; // Cada cuántas filas un pasillo horizontal
-let pasilloVerticalCada = 0; // Cada cuántas columnas un pasillo vertical
-
-function aplicarPasillosAutomaticos(rows, cols) {
-  const seatMap = document.getElementById("seatMap");
-  const seats = seatMap.querySelectorAll(".seat");
-
-  seats.forEach((seat) => {
+// Guarda el estado actual
+function getSeatData() {
+  const seatElements = document.querySelectorAll(".seat");
+  const seatData = {};
+  seatElements.forEach(seat => {
     const r = parseInt(seat.dataset.row);
     const c = parseInt(seat.dataset.col);
+    seatData[`${r},${c}`] = {
+      type: seat.dataset.type,
+      isAisle: seat.dataset.isAisle,
+      bg: seat.style.backgroundColor
+    };
+  });
+  return seatData;
+}
 
-    // Resetear primero
-    seat.classList.remove("disabled");
-    seat.style.backgroundColor = "#eee";
-    seat.dataset.type = seat.dataset.type || ""; // Mantener tipo si tiene
-
-    // Condición pasillos automáticos
-    if (
-      (pasilloHorizontalCada > 0 && (r + 1) % pasilloHorizontalCada === 0) ||
-      (pasilloVerticalCada > 0 && (c + 1) % pasilloVerticalCada === 0)
-    ) {
-      seat.classList.add("disabled");
-      seat.style.backgroundColor = "#ccc";
-      seat.dataset.type = ""; // Quitar tipo si tenía
+// Restaura el estado
+function restoreSeatData(seatData) {
+  const seats = document.querySelectorAll(".seat");
+  seats.forEach(seat => {
+    const r = parseInt(seat.dataset.row);
+    const c = parseInt(seat.dataset.col);
+    const data = seatData[`${r},${c}`];
+    if (data) {
+      seat.dataset.type = data.type;
+      seat.dataset.isAisle = data.isAisle;
+      seat.style.backgroundColor = data.bg;
+      seat.classList.remove("disabled", "aisle", "offset");
+      if (data.type === "disabled") {
+        seat.classList.add("disabled", "aisle");
+      } else if (data.type === "offset") {
+        seat.classList.add("offset");
+      }
     }
   });
 }
@@ -292,38 +308,105 @@ function generateGrid() {
         handleSeatClick(e.target);
       });
 
+      // 👇 Agrega aquí el listener para el menú contextual
+      div.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        showContextMenu(e, r, c);
+      });
+
       rowDiv.appendChild(div);
     }
     seatMap.appendChild(rowDiv);
   }
-  aplicarPasillosAutomaticos(rows, cols);
 }
 
-// Inputs para controlar frecuencia pasillos
-document.getElementById("pasilloHInput").addEventListener("change", (e) => {
-  pasilloHorizontalCada = parseInt(e.target.value) || 0;
-  generateGrid();
-});
+// AGREGA FILAS
+function insertRowAt(index) {
+  const rowInput = document.getElementById("rows");
+  const cols = parseInt(document.getElementById("cols").value);
+  let rows = parseInt(rowInput.value);
+  
+  const seatData = getSeatData();
+  const newSeatData = {};
+  // Construye nuevo estado con la fila vacía insertada
+  for (let r = 0; r < rows + 1; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (r < index) {
+        // Copia filas anteriores
+        const prev = seatData[`${r},${c}`];
+        if (prev) newSeatData[`${r},${c}`] = prev;
+      } else if (r === index) {
+        // Nueva fila vacía
+        newSeatData[`${r},${c}`] = { type: "", isAisle: "false", bg: "" };
+      } else {
+        // Copia filas posteriores, desplazadas +1
+        const prev = seatData[`${r-1},${c}`];
+        if (prev) newSeatData[`${r},${c}`] = prev;
+      }
+    }
+  }
 
-document.getElementById("pasilloVInput").addEventListener("change", (e) => {
-  pasilloVerticalCada = parseInt(e.target.value) || 0;
+  rowInput.value = rows + 1;
+  // Aquí se actualiza la estructura de datos
   generateGrid();
-});
+  restoreSeatData(newSeatData);
+}
+
+// AGREGA COLUMNAS
+function insertColAt(index) {
+  const colInput = document.getElementById("cols");
+  const rows = parseInt(document.getElementById("rows").value);
+  let cols = parseInt(colInput.value);
+  
+  const seatData = getSeatData();
+  const newSeatData = {};
+  // Construye nuevo estado con la columna vacía insertada
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols + 1; c++) {
+      if (c < index) {
+        // Copia columnas anteriores
+        const prev = seatData[`${r},${c}`];
+        if (prev) newSeatData[`${r},${c}`] = prev;
+      } else if (c === index) {
+        // Nueva columna vacía
+        newSeatData[`${r},${c}`] = { type: "", isAisle: "false", bg: "" };
+      } else {
+        // Copia columnas posteriores, desplazadas +1
+        const prev = seatData[`${r},${c-1}`];
+        if (prev) newSeatData[`${r},${c}`] = prev;
+      }
+    }
+  }
+
+  colInput.value = cols + 1;
+  // Aquí se actualiza la estructura de datos
+  generateGrid();
+  restoreSeatData(newSeatData);
+}
+
 
 // Botón toggle modo pasillo
-const toggleButton = document.getElementById("toggleAisleMode");
-toggleButton.addEventListener("click", () => {
+const aisleButton = document.getElementById("toggleAisleMode");
+aisleButton.addEventListener("click", () => {
   isAisleMode = !isAisleMode;
 
   // 🔧 Desactivar borrador al activar modo pasillo
-  if (isAisleMode && isEraser) {
+  if (isAisleMode) {
+    isOffsetMode = false;
     isEraser = false;
-    document.getElementById("eraserButton").classList.remove("active");
+    offsetButton.textContent =
+      "↔️ Modo Offset: OFF";
+    offsetButton.style.backgroundColor = "";
+    offsetButton.style.color = "";
+    document.getElementById("eraserButton").classList.remove("active", "offset");
+    aisleButton.style.backgroundColor = "#888"; // Más oscuro cuando está ON
+    aisleButton.style.color = "white"; // Más oscuro cuando está ON
+  } else {
+    aisleButton.style.backgroundColor = ""; // Color por defecto cuando está OFF
+    aisleButton.style.color = ""; // Más oscuro cuando está ON
   }
 
-  toggleButton.textContent = `🛣️ Deshabilitar asientos: ${
-    isAisleMode ? "ON" : "OFF"
-  }`;
+  aisleButton.textContent = `🛣️ Deshabilitar asientos: ${isAisleMode ? "ON" : "OFF"}`;
 });
 
 // Botón toggle modo offset
@@ -335,9 +418,16 @@ offsetButton.addEventListener("click", () => {
   if (isOffsetMode) {
     isAisleMode = false;
     isEraser = false;
-    document.getElementById("toggleAisleMode").textContent =
+    aisleButton.textContent =
       "🛣️ Deshabilitar asientos: OFF";
-    document.getElementById("eraserButton").classList.remove("active");
+    aisleButton.style.backgroundColor = "";
+    aisleButton.style.color = "";
+    document.getElementById("eraserButton").classList.remove("active", "offset");
+    offsetButton.style.backgroundColor = "#888"; // Más oscuro cuando está ON
+    offsetButton.style.color = "white"; // Más oscuro cuando está ON
+  } else {
+    offsetButton.style.backgroundColor = ""; // Color por defecto cuando está OFF
+    offsetButton.style.color = ""; // Más oscuro cuando está ON
   }
 
   offsetButton.textContent = `↔️ Modo Offset: ${isOffsetMode ? "ON" : "OFF"}`;
@@ -347,9 +437,11 @@ offsetButton.addEventListener("click", () => {
 function addSeatType(e) {
   e.preventDefault();
   const name = document.getElementById("typeName").value.trim();
+  const price = document.getElementById("typePrice").value;
   if (!name || seatTypes[name]) return;
 
-  seatTypes[name] = selectedColor;
+  // seatTypes[name] = selectedColor;
+  seatTypes[name] = { color: selectedColor, price: price };
   updateLegend();
   updateTypeSelector();
   document.getElementById("typeForm").reset();
@@ -362,7 +454,7 @@ function updateLegend() {
 
   for (var name in seatTypes) {
     if (seatTypes.hasOwnProperty(name)) {
-      var color = seatTypes[name];
+      var color = seatTypes[name].color;
 
       var chip = document.createElement("div");
       chip.className = "chip";
@@ -550,68 +642,71 @@ function importFromJSON(data) {
       seatEl.dataset.type = seat.type;
       seatEl.dataset.isAisle = "false";
       seatEl.classList.remove("disabled", "aisle");
-      seatEl.style.backgroundColor = seatTypes[seat.type];
+      seatEl.style.backgroundColor = seatTypes[seat.type].color;
     }
   });
 }
 
 // PLANTILLAS
-document.getElementById("plantilla").addEventListener("change", (e) => {
+document.getElementById("plantilla").addEventListener("change", async (e) => {
   const type = e.target.value;
   if (!type) return;
 
-  let rows = 0,
-    cols = 0;
-  let logicFn;
 
-  switch (type) {
-    case "cine":
-      rows = 10;
-      cols = 12;
-      logicFn = (r, c) => (c === 5 || c === 6 ? null : true);
-      break;
-    case "teatro":
-      rows = 8;
-      cols = 14;
-      logicFn = (r, c) => (c < 3 || c > 10 ? null : true);
-      break;
-    case "estadio":
-      rows = 12;
-      cols = 20;
-      logicFn = (r, c) => (c % 5 === 0 || r % 4 === 0 ? null : true);
-      break;
+  // Ruta al archivo JSON de la plantilla
+  const url = `../../assets/${type}.json`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("No se pudo cargar la plantilla");
+    const plantilla = await response.json();
+    importFromJSON(plantilla); // Usa tu función existente para importar el mapa
+  } catch (err) {
+    alert("Error al cargar la plantilla: " + err.message);
   }
-
-  document.getElementById("rows").value = rows;
-  document.getElementById("cols").value = cols;
-  generateGridWithTemplate(rows, cols, logicFn);
 });
 
-function generateGridWithTemplate(rows, cols, isSeatFn) {
-  const seatMap = document.getElementById("seatMap");
-  seatMap.innerHTML = "";
-  seatMap.style.gridTemplateColumns = `repeat(${cols}, 20px)`;
+// MENU DE OPCIONES PARA AGREGAR FILAS O COLUMNAS CON CLICK DERECHO
+function showContextMenu(e, row, col) {
+  // Elimina menú anterior si existe
+  const oldMenu = document.getElementById("seatContextMenu");
+  if (oldMenu) oldMenu.remove();
 
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const div = document.createElement("div");
-      div.className = "seat";
-      div.dataset.row = r;
-      div.dataset.col = c;
-      div.dataset.type = "";
+  const menu = document.createElement("div");
+  menu.id = "seatContextMenu";
+  menu.style.position = "absolute";
+  menu.style.top = `${e.pageY + 20}px`;
+  menu.style.left = `${e.pageX + 20}px`;
+  menu.style.background = "#fff";
+  menu.style.border = "1px solid #ccc";
+  menu.style.zIndex = 1000;
+  menu.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+  menu.style.padding = "4px";
 
-      if (!isSeatFn(r, c)) {
-        div.classList.add("disabled");
-        div.style.backgroundColor = "#ccc";
-      } else {
-        div.addEventListener("click", (e) => {
-          handleSeatClick(e.target);
-        });
-      }
+  [
+    { label: "Insertar fila arriba", action: () => insertRowAt(row) },
+    { label: "Insertar fila abajo", action: () => insertRowAt(row + 1) },
+    { label: "Insertar columna a la izquierda", action: () => insertColAt(col) },
+    { label: "Insertar columna a la derecha", action: () => insertColAt(col + 1) },
+  ].forEach(item => {
+    const btn = document.createElement("button");
+    btn.textContent = item.label;
+    btn.style.display = "block";
+    btn.style.width = "100%";
+    btn.onclick = () => {
+      item.action();
+      menu.remove();
+    };
+    menu.appendChild(btn);
+  });
 
-      seatMap.appendChild(div);
-    }
-  }
+  document.body.appendChild(menu);
+
+  // Cierra el menú si haces click fuera
+  document.addEventListener("click", function handler() {
+    menu.remove();
+    document.removeEventListener("click", handler);
+  });
 }
 
 generateGrid();
