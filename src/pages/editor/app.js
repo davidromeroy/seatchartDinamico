@@ -165,11 +165,10 @@ function toggleEraser() {
   if (isEraser) {
     isAisleMode = false;
     isOffsetMode = false;
-    aisleButton.textContent = `🛣️ Deshabilitar asientos: OFF`;
-    offsetButton.style.backgroundColor = "";
-    offsetButton.style.color = "";
-    aisleButton.style.backgroundColor = "";
-    aisleButton.style.color = "";
+    aisleButton.textContent = "🛣️ Deshabilitar asientos: OFF";
+    offsetButton.textContent = "↔️ Modo Offset: OFF";
+    aisleButton.classList.remove("active");
+    offsetButton.classList.remove("active");
   }
 
   const eraserButton = document.getElementById("eraserButton");
@@ -231,9 +230,7 @@ function handleSeatClick(seat) {
   if (isOffsetMode) {
     toggleOffsetForSeat(seat);
     return;
-  } 
-  
-  else {
+  } else {
     applyTool(seat); // paintSeat incluida aquí
   }
 }
@@ -242,13 +239,13 @@ function handleSeatClick(seat) {
 function getSeatData() {
   const seatElements = document.querySelectorAll(".seat");
   const seatData = {};
-  seatElements.forEach(seat => {
+  seatElements.forEach((seat) => {
     const r = parseInt(seat.dataset.row);
     const c = parseInt(seat.dataset.col);
     seatData[`${r},${c}`] = {
       type: seat.dataset.type,
       isAisle: seat.dataset.isAisle,
-      bg: seat.style.backgroundColor
+      bg: seat.style.backgroundColor,
     };
   });
   return seatData;
@@ -257,7 +254,7 @@ function getSeatData() {
 // Restaura el estado
 function restoreSeatData(seatData) {
   const seats = document.querySelectorAll(".seat");
-  seats.forEach(seat => {
+  seats.forEach((seat) => {
     const r = parseInt(seat.dataset.row);
     const c = parseInt(seat.dataset.col);
     const data = seatData[`${r},${c}`];
@@ -325,7 +322,7 @@ function insertRowAt(index) {
   const rowInput = document.getElementById("rows");
   const cols = parseInt(document.getElementById("cols").value);
   let rows = parseInt(rowInput.value);
-  
+
   const seatData = getSeatData();
   const newSeatData = {};
   // Construye nuevo estado con la fila vacía insertada
@@ -340,7 +337,7 @@ function insertRowAt(index) {
         newSeatData[`${r},${c}`] = { type: "", isAisle: "false", bg: "" };
       } else {
         // Copia filas posteriores, desplazadas +1
-        const prev = seatData[`${r-1},${c}`];
+        const prev = seatData[`${r - 1},${c}`];
         if (prev) newSeatData[`${r},${c}`] = prev;
       }
     }
@@ -357,7 +354,7 @@ function insertColAt(index) {
   const colInput = document.getElementById("cols");
   const rows = parseInt(document.getElementById("rows").value);
   let cols = parseInt(colInput.value);
-  
+
   const seatData = getSeatData();
   const newSeatData = {};
   // Construye nuevo estado con la columna vacía insertada
@@ -372,7 +369,7 @@ function insertColAt(index) {
         newSeatData[`${r},${c}`] = { type: "", isAisle: "false", bg: "" };
       } else {
         // Copia columnas posteriores, desplazadas +1
-        const prev = seatData[`${r},${c-1}`];
+        const prev = seatData[`${r},${c - 1}`];
         if (prev) newSeatData[`${r},${c}`] = prev;
       }
     }
@@ -384,7 +381,6 @@ function insertColAt(index) {
   restoreSeatData(newSeatData);
 }
 
-
 // Botón toggle modo pasillo
 const aisleButton = document.getElementById("toggleAisleMode");
 aisleButton.addEventListener("click", () => {
@@ -394,19 +390,14 @@ aisleButton.addEventListener("click", () => {
   if (isAisleMode) {
     isOffsetMode = false;
     isEraser = false;
-    offsetButton.textContent =
-      "↔️ Modo Offset: OFF";
-    offsetButton.style.backgroundColor = "";
-    offsetButton.style.color = "";
-    document.getElementById("eraserButton").classList.remove("active", "offset");
-    aisleButton.style.backgroundColor = "#888"; // Más oscuro cuando está ON
-    aisleButton.style.color = "white"; // Más oscuro cuando está ON
-  } else {
-    aisleButton.style.backgroundColor = ""; // Color por defecto cuando está OFF
-    aisleButton.style.color = ""; // Más oscuro cuando está ON
+    offsetButton.classList.remove("active");
+    offsetButton.textContent = "↔️ Modo Offset: OFF";
+    document.getElementById("eraserButton").classList.remove("active");
   }
-
-  aisleButton.textContent = `🛣️ Deshabilitar asientos: ${isAisleMode ? "ON" : "OFF"}`;
+  aisleButton.classList.toggle("active", isAisleMode);
+  aisleButton.textContent = `🛣️ Deshabilitar asientos: ${
+    isAisleMode ? "ON" : "OFF"
+  }`;
 });
 
 // Botón toggle modo offset
@@ -418,18 +409,12 @@ offsetButton.addEventListener("click", () => {
   if (isOffsetMode) {
     isAisleMode = false;
     isEraser = false;
-    aisleButton.textContent =
-      "🛣️ Deshabilitar asientos: OFF";
-    aisleButton.style.backgroundColor = "";
-    aisleButton.style.color = "";
-    document.getElementById("eraserButton").classList.remove("active", "offset");
-    offsetButton.style.backgroundColor = "#888"; // Más oscuro cuando está ON
-    offsetButton.style.color = "white"; // Más oscuro cuando está ON
-  } else {
-    offsetButton.style.backgroundColor = ""; // Color por defecto cuando está OFF
-    offsetButton.style.color = ""; // Más oscuro cuando está ON
+    aisleButton.textContent = "🛣️ Deshabilitar asientos: OFF";
+    aisleButton.classList.remove("active");
+    document.getElementById("eraserButton").classList.remove("active");
   }
 
+  offsetButton.classList.toggle("active", isOffsetMode);
   offsetButton.textContent = `↔️ Modo Offset: ${isOffsetMode ? "ON" : "OFF"}`;
 });
 
@@ -507,6 +492,8 @@ function removeSeatType(name) {
 
 function updateTypeSelector() {
   const select = document.getElementById("seatTypeSelect");
+  const nameInput = document.getElementById("typeName");
+  const priceInput = document.getElementById("typePrice");
   select.innerHTML = "";
   for (let name in seatTypes) {
     const option = document.createElement("option");
@@ -517,11 +504,26 @@ function updateTypeSelector() {
 
   select.onchange = () => {
     activeType = select.value;
+    // Mostrar info del tipo seleccionado
+    if (seatTypes[activeType]) {
+      nameInput.value = activeType;
+      priceInput.value = seatTypes[activeType].price || "";
+      // Si quieres mostrar el color también:
+      if (typeof pickr !== "undefined" && seatTypes[activeType].color) {
+        pickr.setColor(seatTypes[activeType].color);
+      }
+    }
   };
 
   if (select.options.length === 1) {
     select.selectedIndex = 0;
     activeType = select.value;
+    // Mostrar info del tipo seleccionado
+    nameInput.value = activeType;
+    priceInput.value = seatTypes[activeType].price || "";
+    if (typeof pickr !== "undefined" && seatTypes[activeType].color) {
+      pickr.setColor(seatTypes[activeType].color);
+    }
   }
 }
 
@@ -652,7 +654,6 @@ document.getElementById("plantilla").addEventListener("change", async (e) => {
   const type = e.target.value;
   if (!type) return;
 
-
   // Ruta al archivo JSON de la plantilla
   const url = `../../assets/${type}.json`;
 
@@ -661,6 +662,7 @@ document.getElementById("plantilla").addEventListener("change", async (e) => {
     if (!response.ok) throw new Error("No se pudo cargar la plantilla");
     const plantilla = await response.json();
     importFromJSON(plantilla); // Usa tu función existente para importar el mapa
+    exportJSON();
   } catch (err) {
     alert("Error al cargar la plantilla: " + err.message);
   }
@@ -686,9 +688,15 @@ function showContextMenu(e, row, col) {
   [
     { label: "Insertar fila arriba", action: () => insertRowAt(row) },
     { label: "Insertar fila abajo", action: () => insertRowAt(row + 1) },
-    { label: "Insertar columna a la izquierda", action: () => insertColAt(col) },
-    { label: "Insertar columna a la derecha", action: () => insertColAt(col + 1) },
-  ].forEach(item => {
+    {
+      label: "Insertar columna a la izquierda",
+      action: () => insertColAt(col),
+    },
+    {
+      label: "Insertar columna a la derecha",
+      action: () => insertColAt(col + 1),
+    },
+  ].forEach((item) => {
     const btn = document.createElement("button");
     btn.textContent = item.label;
     btn.style.display = "block";

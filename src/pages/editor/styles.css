@@ -153,20 +153,13 @@ button {
   cursor: pointer;
 }
 
-#eraserButton.active {
-  background-color: #888; /* tono más oscuro */
-  color: white;
-}
-
-#toggleAisleMode.active {
-  background-color: #888; /* tono más oscuro */
-  color: white;
-}
-
+#eraserButton.active,
+#toggleAisleMode.active,
 #toggleOffsetMode.active {
   background-color: #888; /* tono más oscuro */
   color: white;
 }
+
 .json-block {
   position: relative;
   background-color: #f4f4f4;

@@ -1,11 +1,15 @@
 {
-  "rows": 12,
+  "rows": 14,
   "cols": 20,
   "selectedColor": "#E8ED13",
   "types": {
     "Asientos": {
       "color": "#A5A6AD",
       "price": "20"
+    },
+    "VIP": {
+      "color": "#3f4696ff",
+      "price": "30"
     }
   },
   "seats": [
@@ -1208,6 +1212,206 @@
       "row": 11,
       "col": 19,
       "type": "Asientos"
+    },
+    {
+      "row": 12,
+      "col": 0,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 1,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 2,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 3,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 4,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 5,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 6,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 7,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 8,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 9,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 10,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 11,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 12,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 13,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 14,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 15,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 16,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 17,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 18,
+      "type": "disabled"
+    },
+    {
+      "row": 12,
+      "col": 19,
+      "type": "disabled"
+    },
+    {
+      "row": 13,
+      "col": 0,
+      "type": "disabled"
+    },
+    {
+      "row": 13,
+      "col": 1,
+      "type": "disabled"
+    },
+    {
+      "row": 13,
+      "col": 2,
+      "type": "disabled"
+    },
+    {
+      "row": 13,
+      "col": 3,
+      "type": "VIP"
+    },
+    {
+      "row": 13,
+      "col": 4,
+      "type": "VIP"
+    },
+    {
+      "row": 13,
+      "col": 5,
+      "type": "disabled"
+    },
+    {
+      "row": 13,
+      "col": 6,
+      "type": "VIP"
+    },
+    {
+      "row": 13,
+      "col": 7,
+      "type": "VIP"
+    },
+    {
+      "row": 13,
+      "col": 8,
+      "type": "disabled"
+    },
+    {
+      "row": 13,
+      "col": 9,
+      "type": "VIP"
+    },
+    {
+      "row": 13,
+      "col": 10,
+      "type": "VIP"
+    },
+    {
+      "row": 13,
+      "col": 11,
+      "type": "disabled"
+    },
+    {
+      "row": 13,
+      "col": 12,
+      "type": "VIP"
+    },
+    {
+      "row": 13,
+      "col": 13,
+      "type": "VIP"
+    },
+    {
+      "row": 13,
+      "col": 14,
+      "type": "disabled"
+    },
+    {
+      "row": 13,
+      "col": 15,
+      "type": "VIP"
+    },
+    {
+      "row": 13,
+      "col": 16,
+      "type": "VIP"
+    },
+    {
+      "row": 13,
+      "col": 17,
+      "type": "disabled"
+    },
+    {
+      "row": 13,
+      "col": 18,
+      "type": "disabled"
+    },
+    {
+      "row": 13,
+      "col": 19,
+      "type": "disabled"
     }
   ]
 }
